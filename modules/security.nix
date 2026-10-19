@@ -6,7 +6,7 @@
 #   1. unbound 上游 DNS 在 forward-zone 中修改；
 #   2. umask 022（宽松）/ 027（组不可读）/ 077（完全私有）
 # ============================================================
-{ config, pkgs, lib, myLib, ... }:
+{ config, myLib, ... }:
 
 {
   options.my.security.enable = myLib.mkEnable' "安全基线";
@@ -15,10 +15,12 @@
 
     # ---- journald 日志持久化（默认重启即丢，此处落盘） ----
     services = {
-      journald.extraConfig = ''
-        Storage=persistent
-        SystemMaxUse=500M
-      '';
+      # journald 日志持久化（extraConfig 已被 nixpkgs 弃用，
+      # 改用结构化 settings.Journal）
+      journald.settings.Journal = {
+        Storage = "persistent";
+        SystemMaxUse = "500M";
+      };
 
       # ---- SSH 默认关闭；需要时打开且保持下列加固项 ----
       openssh = {
