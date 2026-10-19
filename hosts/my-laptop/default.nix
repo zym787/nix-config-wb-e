@@ -22,15 +22,18 @@
   ];
 
   # ---- 模块总开关（一键切换桌面环境：改这里即可） ----
-  my.hardware.enable = true;
-  my.desktop.niri = {
-    enable = true;
-    scale = 1.0; # 常见修改点：4K 屏建议 2.0，详见 modules/desktop.nix
+  # 注意：my.* 键需合并书写，避免属性集重复绑定（statix W20）
+  my = {
+    hardware.enable = true;
+    desktop.niri = {
+      enable = true;
+      scale = 1.0; # 常见修改点：4K 屏建议 2.0，详见 modules/desktop.nix
+    };
+    shell.enable = true;
+    programs.enable = true;
+    gaming.enable = true;
+    security.enable = true;
   };
-  my.shell.enable = true;
-  my.programs.enable = true;
-  my.gaming.enable = true;
-  my.security.enable = true;
 
   # ---- 主机基础信息 ----
   networking.hostName = "my-laptop"; # 常见修改点：改成你的主机名

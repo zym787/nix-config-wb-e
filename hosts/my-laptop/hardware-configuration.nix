@@ -20,13 +20,15 @@
   boot.kernelModules = [ "kvm-intel" ]; # AMD CPU 改为 "kvm-amd"
 
   # ---- 文件系统（以下为示例，务必替换为真实 UUID） ----
-  fileSystems."/" = {
-    device = "/dev/disk/by-uuid/00000000-0000-0000-0000-000000000000";
-    fsType = "ext4";
-  };
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/0000-0000";
-    fsType = "vfat";
+  fileSystems = {
+    "/" = {
+      device = "/dev/disk/by-uuid/00000000-0000-0000-0000-000000000000";
+      fsType = "ext4";
+    };
+    "/boot" = {
+      device = "/dev/disk/by-uuid/0000-0000";
+      fsType = "vfat";
+    };
   };
   swapDevices = [ ];
 

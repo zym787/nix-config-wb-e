@@ -9,32 +9,19 @@
 { config, pkgs, lib, myLib, ... }:
 
 {
-  home.username = "nixos";
-  home.homeDirectory = "/home/nixos";
-  home.stateVersion = "26.11"; # 与首次启用 home-manager 的版本一致，勿随意改
-
-  # 允许 home-manager 管理自身
-  programs.home-manager.enable = true;
+  # home 键合并书写，避免属性集重复绑定（statix W20）
+  home = {
+    username = "nixos";
+    homeDirectory = "/home/nixos";
+    stateVersion = "26.11"; # 与首次启用 home-manager 的版本一致，勿随意改
+  };
 
   # ---- niri 的用户级补充设置（快捷键主体在 modules/desktop.nix） ----
-  # 此处控制 niri 的 DPI 缩放，请根据显示器实际 PPI 调整：
-  #   96  PPI 左右 → 1.0；144 PPI 左右 → 1.5；216+ PPI（4K 27"）→ 2.0
+  # DPI 缩放由系统模块 my.desktop.niri.scale 统一控制
   home.sessionVariables = {
     NIXOS_OZONE_WL = "1";        # 让 Electron/Chromium 应用走 Wayland
     MOZ_ENABLE_WAYLAND = "1";    # Firefox Wayland 模式
     XDG_SESSION_TYPE = "wayland";
-  };
-
-  # ---- clipman 剪贴板守护进程（配合 foot/niri 快捷键） ----
-  services.cliphist.enable = true; # clipman 的数据源：wl-clipboard 历史服务
-
-  # ---- git 用户配置（按需修改） ----
-  programs.git = {
-    enable = true;
-    settings.user = {
-      name = "Your Name";         # 常见修改点
-      email = "you@example.com";  # 常见修改点
-    };
   };
 
   # ---- 用户级软件包（系统级在 modules/programs.nix，二者互补） ----
@@ -43,6 +30,26 @@
     libnotify     # notify-send 桌面通知
     nerd-fonts.jetbrains-mono # 终端/编辑器图标字体
   ];
+
+  # ---- 用户级 programs 配置（programs 键合并书写） ----
+  programs = {
+    # 允许 home-manager 管理自身
+    home-manager.enable = true;
+
+    # git 用户配置（按需修改）
+    git = {
+      enable = true;
+      settings.user = {
+        name = "Your Name";         # 常见修改点
+        email = "you@example.com";  # 常见修改点
+      };
+    };
+  };
+
+  # ---- clipman 剪贴板守护进程（配合 foot/niri 快捷键） ----
+  services.cliphist.enable = true; # clipman 的数据源：wl-clipboard 历史服务
+
+  # （git 配置已并入上方 programs 块）
 
   # ---- XDG 用户目录与默认应用 ----
   xdg = {

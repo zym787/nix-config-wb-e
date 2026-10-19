@@ -16,27 +16,28 @@
 
   config = myLib.mkIfEnabled config.my.hardware.enable (lib.mkMerge [
     {
-      # ---- 图形栈：默认使用开源驱动（Intel/AMD 开箱即用） ----
-      hardware.graphics = {
-        enable = true;
-        enable32Bit = true; # Steam/游戏需要 32 位驱动库
+      # ---- 图形栈与蓝牙（hardware 键合并，避免重复绑定） ----
+      hardware = {
+        # 默认使用开源驱动（Intel/AMD 开箱即用）
+        graphics = {
+          enable = true;
+          enable32Bit = true; # Steam/游戏需要 32 位驱动库
+        };
+        bluetooth.enable = true;
       };
 
-      # ---- 音频：PipeWire 全家桶（Wayland 桌面事实标准） ----
-      services.pipewire = {
-        enable = true;
-        alsa.enable = true;
-        alsa.support32Bit = true;
-        pulse.enable = true; # 兼容 PulseAudio 客户端
+      # ---- 音频 / 蓝牙托盘 / 电源管理（services 键合并） ----
+      services = {
+        pipewire = {
+          enable = true;
+          alsa.enable = true;
+          alsa.support32Bit = true;
+          pulse.enable = true; # 兼容 PulseAudio 客户端
+        };
+        blueman.enable = true;                 # 蓝牙托盘管理工具
+        power-profiles-daemon.enable = true;   # 笔记本续航优化
       };
       security.rtkit.enable = true; # PipeWire 实时调度需要
-
-      # ---- 蓝牙 ----
-      hardware.bluetooth.enable = true;
-      services.blueman.enable = true; # 托盘管理工具
-
-      # ---- 电源管理（笔记本续航优化） ----
-      services.power-profiles-daemon.enable = true;
 
       # ---- 网络 ----
       networking.networkmanager.enable = true;

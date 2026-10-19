@@ -29,18 +29,21 @@
       eza unzip p7zip
     ];
 
-    # ---- Firefox（Wayland 原生构建） ----
-    programs.firefox = {
-      enable = true;
-      package = pkgs.firefox-wayland; # 已启用 Wayland 后端的官方包
-    };
+    # ---- Firefox / Neovim 系统级声明（programs 键合并书写） ----
+    programs = {
+      # Firefox（Wayland 原生构建）
+      firefox = {
+        enable = true;
+        package = pkgs.firefox-wayland; # 已启用 Wayland 后端的官方包
+      };
 
-    # ---- Neovim：LSP + 语法高亮 + 文件树（全部 declarative） ----
-    programs.neovim = {
-      enable = true;
-      defaultEditor = true;
-      viAlias = true;
-      vimAlias = true;
+      # Neovim 系统级启用；插件与 LSP 细节见下方 home-manager 段
+      neovim = {
+        enable = true;
+        defaultEditor = true;
+        viAlias = true;
+        vimAlias = true;
+      };
     };
 
     home-manager.sharedModules = [

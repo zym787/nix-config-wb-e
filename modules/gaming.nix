@@ -30,17 +30,18 @@ in
 
   config = myLib.mkIfEnabled config.my.gaming.enable {
 
-    # ---- Steam ----
-    programs.steam = {
-      enable = true;
-      remotePlay.openFirewall = true;        # 远程同乐
-      dedicatedServer.openFirewall = true;
-      gamescopeSession.enable = true;        # 内置 gamescope 集成
-      extraCompatPackages = [ pkgs.proton-ge-bin ]; # Proton-GE 兼容层
+    # ---- Steam + gamemode（programs 键合并书写） ----
+    programs = {
+      steam = {
+        enable = true;
+        remotePlay.openFirewall = true;        # 远程同乐
+        dedicatedServer.openFirewall = true;
+        gamescopeSession.enable = true;        # 内置 gamescope 集成
+        extraCompatPackages = [ pkgs.proton-ge-bin ]; # Proton-GE 兼容层
+      };
+      # 游戏时自动优化 CPU 调度/优先级
+      gamemode.enable = true;
     };
-
-    # ---- gamemode：游戏时自动优化 CPU 调度/优先级 ----
-    programs.gamemode.enable = true;
 
     # ---- 桌面会话注册：登录界面可选「Steam (gamescope)」 ----
     # 这是 SteamNix 的核心思路：把游戏作为独立 Wayland 会话
