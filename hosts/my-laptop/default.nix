@@ -18,7 +18,8 @@
     ../../modules/programs.nix     # neovim / firefox / thunar / 截图等
     ../../modules/gaming.nix       # Steam + Epic + gamescope 游戏会话
     ../../modules/security.nix     # 安全基线
-    ./home.nix                     # 本机用户的 home-manager 配置
+    # 注意：home.nix 不得加入 imports（它是 home-manager 模块），
+    # 由下方 home-manager.users 单独载入
   ];
 
   # ---- 模块总开关（一键切换桌面环境：改这里即可） ----
