@@ -9,7 +9,7 @@
 #   然后：sudo nixos-rebuild switch
 # 常见修改点：一般无需改动，主机差异化配置放在 ./hosts/<主机名>/
 # ============================================================
-{ config, pkgs, lib, ... }:
+{ lib, ... }:
 
 let
   myLib = import ./lib { inherit lib; };

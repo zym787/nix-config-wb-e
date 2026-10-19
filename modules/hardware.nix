@@ -6,7 +6,7 @@
 #   1. NVIDIA 用户取消 nvidia 段落注释，并把 videoDrivers 改为 "nvidia"；
 #   2. 打印机支持按需启用 services.printing
 # ============================================================
-{ config, pkgs, lib, myLib, ... }:
+{ config, lib, myLib, ... }:
 
 {
   options.my.hardware = {

@@ -7,7 +7,7 @@
 #   2. users.users.<用户名> 与 home-manager.users.<用户名> 必须同名；
 #   3. 新增模块时在 imports 中追加 ../../modules/xxx.nix
 # ============================================================
-{ config, pkgs, lib, myLib, ... }:
+{ pkgs, ... }:
 
 {
   imports = [

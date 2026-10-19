@@ -7,7 +7,7 @@
 #   1. foot 字体/透明度在 programs.foot.settings 中调整；
 #   2. zsh 主题改 programs.zsh.ohMyZsh.theme（如 "agnoster"）
 # ============================================================
-{ config, pkgs, lib, myLib, ... }:
+{ config, myLib, ... }:
 
 {
   options.my.shell.enable = myLib.mkEnable' "foot + zsh";
@@ -17,7 +17,7 @@
     programs.zsh.enable = true;
 
     home-manager.sharedModules = [
-      ({ pkgs, ... }: {
+      ({ ... }: {
         # ---- 终端与 Shell（programs 键合并书写） ----
         programs = {
           # foot：轻量 Wayland 原生终端

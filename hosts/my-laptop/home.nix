@@ -6,7 +6,7 @@
 #   随系统使用：nixos-rebuild 时自动应用
 # 常见修改点：username / homeDirectory 必须与系统用户一致
 # ============================================================
-{ config, pkgs, lib, myLib, ... }:
+{ pkgs, ... }:
 
 {
   # home 键合并书写，避免属性集重复绑定（statix W20）

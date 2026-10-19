@@ -21,7 +21,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }@inputs:
+  outputs = { nixpkgs, home-manager, ... }@inputs:
     let
       # 导入 ./lib 下的通用工具函数（mkIfEnabled 等）
       myLib = import ./lib { inherit (nixpkgs) lib; };

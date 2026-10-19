@@ -6,7 +6,7 @@
 #   1. neovim 的 LSP 服务器列表在下方 extraPackages 调整；
 #   2. 想加软件直接往 environment.systemPackages 里加
 # ============================================================
-{ config, pkgs, lib, myLib, ... }:
+{ config, pkgs, myLib, ... }:
 
 {
   options.my.programs.enable = myLib.mkEnable' "必备工具集";

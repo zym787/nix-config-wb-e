@@ -13,7 +13,7 @@
 #   1. 会话分辨率在下方 gamescope-session 脚本的 -W/-H 参数修改；
 #   2. 不需要 Heroic 可从 systemPackages 中删除
 # ============================================================
-{ config, pkgs, lib, myLib, ... }:
+{ config, pkgs, myLib, ... }:
 
 let
   # 游戏会话脚本：gamescope 全屏包裹 Steam Big Picture

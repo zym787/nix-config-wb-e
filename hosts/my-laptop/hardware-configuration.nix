@@ -6,7 +6,7 @@
 #   sudo nixos-generate-config --root /mnt
 # 并用生成的 /mnt/etc/nixos/hardware-configuration.nix 覆盖本文件。
 # ============================================================
-{ config, lib, pkgs, modulesPath, ... }:
+{ lib, modulesPath, ... }:
 
 {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
