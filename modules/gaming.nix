@@ -48,17 +48,20 @@ in
       # 登录界面可选「Steam (gamescope)」——SteamNix 核心思路：
       # 把游戏作为独立 Wayland 会话
       displayManager.sessionPackages = [
-        (pkgs.writeTextFile {
-          name = "gamescope-steam-session";
-          destination = "/share/wayland-sessions/steam-gamescope.desktop";
-          text = ''
-            [Desktop Entry]
-            Name=Steam (gamescope)
-            Comment=Steam Big Picture 游戏专用会话
-            Exec=${gamescope-session}/bin/gamescope-session
-            Type=Application
-          '';
-        })
+        # 注意：sessionPackages 要求「带 providedSessions 的 package」类型，
+        # writeTextFile 不满足，需用 runCommand 并声明 passthru.providedSessions
+        (pkgs.runCommand "gamescope-steam-session" {
+          passthru.providedSessions = [ "steam-gamescope" ];
+        } ''
+          mkdir -p $out/share/wayland-sessions
+          cat > $out/share/wayland-sessions/steam-gamescope.desktop <<'EOF'
+          [Desktop Entry]
+          Name=Steam (gamescope)
+          Comment=Steam Big Picture 游戏专用会话
+          Exec=${gamescope-session}/bin/gamescope-session
+          Type=Application
+          EOF
+        '')
       ];
 
       # 手柄支持（Xbox/PS/Switch Pro）udev 规则
