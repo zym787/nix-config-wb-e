@@ -1,0 +1,66 @@
+# ============================================================
+# .github/workflows/validate.yml —— NixOS 配置验证 CI
+# ------------------------------------------------------------
+# 用途：每次 push / PR 时验证配置的准确性，三层检查：
+#   1. flake check —— 求值所有 nixosConfigurations，验证模块
+#      选项名、类型、属性路径全部合法（不真实构建，速度快）
+#   2. statix —— 静态检查 Nix 反模式（重复绑定、无用 inherit 等）
+#   3. deadnix —— 检查未使用的变量绑定（死代码）
+# 常见修改点：新增主机后无需改动，flake check 自动覆盖所有主机
+# ============================================================
+name: Validate NixOS Config
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  flake-check:
+    name: nix flake check（求值验证）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 官方安装器 Action，自动启用 flakes
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            # 允许非自由软件（配置中含 Steam/NVIDIA 选项）
+            allowUnfree = true
+
+      # Magic Nix Cache：缓存 nix store，大幅加速后续运行
+      - uses: DeterminateSystems/magic-nix-cache-action@v9
+
+      # 核心验证：求值全部主机配置（--no-build 只检查不构建）
+      - name: nix flake check
+        run: nix flake check --no-build --show-trace
+
+      # 单独求值每个主机的 toplevel 推导，确保模块拼装无误
+      - name: 求值 my-laptop 系统配置
+        run: |
+          nix eval .#nixosConfigurations.my-laptop.config.system.build.toplevel.drvPath \
+            --show-trace
+
+  lint:
+    name: 静态检查（statix + deadnix）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: experimental-features = nix-command flakes
+
+      # statix：Nix 反模式检查（W 级警告不阻断，E 级报错）
+      - name: statix check
+        run: nix run nixpkgs#statix -- check .
+
+      # deadnix：未使用绑定检查
+      - name: deadnix
+        run: nix run nixpkgs#deadnix -- --fail .
+
+      # nixfmt：代码格式统一性检查（仅提示，不阻断合并）
+      - name: nixfmt 格式检查
+        continue-on-error: true
+        run: nix run nixpkgs#nixfmt-rfc-style -- --check $(find . -name '*.nix' -not -path './.git/*')
