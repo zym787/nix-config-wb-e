@@ -17,7 +17,7 @@
     programs.zsh.enable = true;
 
     home-manager.sharedModules = [
-      ({ }: {
+      ({ ... }: {
         # ---- 终端与 Shell（programs 键合并书写） ----
         programs = {
           # foot：轻量 Wayland 原生终端
