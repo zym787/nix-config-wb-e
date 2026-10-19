@@ -43,21 +43,27 @@ in
       gamemode.enable = true;
     };
 
-    # ---- 桌面会话注册：登录界面可选「Steam (gamescope)」 ----
-    # 这是 SteamNix 的核心思路：把游戏作为独立 Wayland 会话
-    services.displayManager.sessionPackages = [
-      (pkgs.writeTextFile {
-        name = "gamescope-steam-session";
-        destination = "/share/wayland-sessions/steam-gamescope.desktop";
-        text = ''
-          [Desktop Entry]
-          Name=Steam (gamescope)
-          Comment=Steam Big Picture 游戏专用会话
-          Exec=${gamescope-session}/bin/gamescope-session
-          Type=Application
-        '';
-      })
-    ];
+    # ---- 会话注册与手柄 udev 规则（services 键合并书写） ----
+    services = {
+      # 登录界面可选「Steam (gamescope)」——SteamNix 核心思路：
+      # 把游戏作为独立 Wayland 会话
+      displayManager.sessionPackages = [
+        (pkgs.writeTextFile {
+          name = "gamescope-steam-session";
+          destination = "/share/wayland-sessions/steam-gamescope.desktop";
+          text = ''
+            [Desktop Entry]
+            Name=Steam (gamescope)
+            Comment=Steam Big Picture 游戏专用会话
+            Exec=${gamescope-session}/bin/gamescope-session
+            Type=Application
+          '';
+        })
+      ];
+
+      # 手柄支持（Xbox/PS/Switch Pro）udev 规则
+      udev.packages = [ pkgs.game-devices-udev-rules ];
+    };
 
     # ---- 游戏相关软件包 ----
     environment.systemPackages = with pkgs; [
@@ -70,8 +76,7 @@ in
       winetricks
     ];
 
-    # ---- 手柄支持（Xbox/PS/Switch Pro） ----
+    # ---- 手柄蓝牙支持 ----
     hardware.xpadneo.enable = true;
-    services.udev.packages = [ pkgs.game-devices-udev-rules ];
   };
 }
