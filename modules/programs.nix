@@ -63,7 +63,7 @@
             nil                     # Nix LSP
             lua-language-server
             pyright
-            nodePackages.typescript-language-server
+            typescript-language-server  # nodePackages 已被 nixpkgs 移除，用顶层包名
           ];
           # 内置 Lua 配置：启用上述插件的合理默认
           extraLuaConfig = ''
