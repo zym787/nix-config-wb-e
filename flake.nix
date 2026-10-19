@@ -38,9 +38,12 @@
           home-manager.nixosModules.home-manager
           {
             # home-manager 与系统级配置共享 pkgs / specialArgs，保证一致
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = { inherit inputs myLib; };
+            # （键合并书写，避免 statix W20 重复键警告）
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              extraSpecialArgs = { inherit inputs myLib; };
+            };
           }
         ];
       };

@@ -25,7 +25,10 @@ in
   # 向所有子模块传递 myLib（与 flake 入口的 specialArgs 对应）
   _module.args.myLib = myLib;
 
-  home-manager.useGlobalPkgs = true;
-  home-manager.useUserPackages = true;
-  home-manager.extraSpecialArgs = { inherit myLib; inputs = { }; };
+  # home-manager 键合并书写（statix W20）
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    extraSpecialArgs = { inherit myLib; inputs = { }; };
+  };
 }
