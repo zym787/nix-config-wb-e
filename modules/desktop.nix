@@ -62,52 +62,63 @@ in
       config.niri.default = [ "gnome" "gtk" ];
     };
 
-    # ---- niri 用户级配置：默认快捷键 ----
-    # 注意：写入 home-manager 的作用域，与系统级 niri 协同
+    # ---- niri 用户级配置：默认快捷键（KDL 格式，declarative 写入） ----
+    # 说明：home-manager 上游无 programs.niri 模块（该模块在 niri-flake 中），
+    # 为保持「零外部 flake 输入」，此处直接生成 ~/.config/niri/config.kdl。
     home-manager.sharedModules = [
-      ({ config, pkgs, ... }: {
-        # 启动时拉起 DMS（Quickshell 加载 DMS 配置目录）
-        programs.niri.settings = {
-          spawn-at-startup = [
-            { command = [ "qs" "-c" "dms" ]; }                    # DankMaterialShell 主体
-            { command = [ "wl-paste" "--watch" "cliphist" "store" ]; } # 剪贴板历史
-          ];
+      ({ pkgs, ... }: {
+        xdg.configFile."niri/config.kdl".text = ''
+          // niri 合成器配置（由 Nix 生成，手工改动会在下次 rebuild 时被覆盖）
 
-          # 显示器输出：此处控制 niri 的 DPI 缩放，请根据显示器实际 PPI 调整
-          outputs."eDP-1".scale = cfg.scale;
+          // 启动时拉起 DMS（Quickshell 加载 DMS 配置目录）与剪贴板历史
+          spawn-at-startup "qs" "-c" "dms"
+          spawn-at-startup "wl-paste" "--watch" "cliphist" "store"
 
-          input = {
-            keyboard.xkb.layout = "us";      # 常见修改点：多语言输入法见 fcitx5 模块
-            touchpad = { tap = true; natural-scroll = true; };
-          };
+          // 显示器输出：此处控制 niri 的 DPI 缩放，请根据显示器实际 PPI 调整
+          // （由 my.desktop.niri.scale 选项注入）
+          output "eDP-1" {
+              scale ${toString cfg.scale}
+          }
 
-          # ---- 默认快捷键（可自由修改） ----
-          binds = {
-            # 启动器：Win+D 呼出 DMS spotlight 启动器
-            "Mod+D".action.spawn = [ "qs" "-c" "dms" "ipc" "call" "spotlight" "toggle" ];
-            # 终端：Win+Enter 启动 foot
-            "Mod+Return".action.spawn = [ "foot" ];
-            # 关闭窗口 / 概览 / 锁屏
-            "Mod+Q".action.close-window = { };
-            "Mod+O".action.toggle-overview = { };
-            "Mod+Shift+L".action.spawn = [ "qs" "-c" "dms" "ipc" "call" "lock" "lock" ];
-            # 焦点移动（vim 风格）
-            "Mod+H".action.focus-column-left = { };
-            "Mod+L".action.focus-column-right = { };
-            "Mod+J".action.focus-window-down = { };
-            "Mod+K".action.focus-window-up = { };
-            # 截图：Print 全屏 / Shift+Print 框选（grim + slurp）
-            "Print".action.spawn = [ "grim" ];
-            "Shift+Print".action.spawn = [ "sh" "-c" "grim -g \"$(slurp)\" - | wl-copy" ];
-            # 剪贴板历史：Win+V 经 DMS 调取 cliphist
-            "Mod+V".action.spawn = [ "sh" "-c" "cliphist list | qs -c dms ipc call spotlight clipboard" ];
-            # 音量/亮度媒体键
-            "XF86AudioRaiseVolume".action.spawn = [ "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%+" ];
-            "XF86AudioLowerVolume".action.spawn = [ "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-" ];
-            "XF86MonBrightnessUp".action.spawn = [ "brightnessctl" "s" "10%+" ];
-            "XF86MonBrightnessDown".action.spawn = [ "brightnessctl" "s" "10%-" ];
-          };
-        };
+          input {
+              keyboard {
+                  xkb {
+                      layout "us" // 常见修改点：键盘布局
+                  }
+              }
+              touchpad {
+                  tap
+                  natural-scroll
+              }
+          }
+
+          // ---- 默认快捷键（可自由修改） ----
+          binds {
+              // 启动器：Win+D 呼出 DMS spotlight 启动器
+              Mod+D { spawn "qs" "-c" "dms" "ipc" "call" "spotlight" "toggle"; }
+              // 终端：Win+Enter 启动 foot
+              Mod+Return { spawn "foot"; }
+              // 关闭窗口 / 概览 / 锁屏
+              Mod+Q { close-window; }
+              Mod+O { toggle-overview; }
+              Mod+Shift+L { spawn "qs" "-c" "dms" "ipc" "call" "lock" "lock"; }
+              // 焦点移动（vim 风格）
+              Mod+H { focus-column-left; }
+              Mod+L { focus-column-right; }
+              Mod+J { focus-window-down; }
+              Mod+K { focus-window-up; }
+              // 截图：Print 全屏 / Shift+Print 框选（grim + slurp）
+              Print { spawn "grim"; }
+              Shift+Print { spawn "sh" "-c" "grim -g \"$(slurp)\" - | wl-copy"; }
+              // 剪贴板历史：Win+V 调取 cliphist
+              Mod+V { spawn "sh" "-c" "cliphist list | qs -c dms ipc call spotlight clipboard"; }
+              // 音量/亮度媒体键
+              XF86AudioRaiseVolume { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%+"; }
+              XF86AudioLowerVolume { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"; }
+              XF86MonBrightnessUp { spawn "brightnessctl" "s" "10%+"; }
+              XF86MonBrightnessDown { spawn "brightnessctl" "s" "10%-"; }
+          }
+        '';
 
         # 亮度/截图等用户工具
         home.packages = with pkgs; [ brightnessctl wireplumber ];
