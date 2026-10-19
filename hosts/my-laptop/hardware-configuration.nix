@@ -11,13 +11,16 @@
 {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
-  # ---- 引导加载器（UEFI + systemd-boot，现代笔记本推荐） ----
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-
-  # ---- 内核模块：按 nixos-generate-config 的输出填写 ----
-  boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" ];
-  boot.kernelModules = [ "kvm-intel" ]; # AMD CPU 改为 "kvm-amd"
+  # ---- 引导与内核模块（boot 键合并书写；按 nixos-generate-config 输出填写） ----
+  boot = {
+    # UEFI + systemd-boot，现代笔记本推荐
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
+    initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" ];
+    kernelModules = [ "kvm-intel" ]; # AMD CPU 改为 "kvm-amd"
+  };
 
   # ---- 文件系统（以下为示例，务必替换为真实 UUID） ----
   fileSystems = {
